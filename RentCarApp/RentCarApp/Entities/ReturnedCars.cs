@@ -3,8 +3,8 @@
 
 namespace RentCarApp.Entities
 {
-    public class ReturnedCars : CarsForRent
+    public class ReturnedCars : Cars
     {
-        public override string ToString() => base.ToString() + " => zwrócony";
+        public override string ToString() => base.ToString();
     }
 }

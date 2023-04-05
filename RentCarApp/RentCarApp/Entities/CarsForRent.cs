@@ -2,7 +2,7 @@
 
 namespace RentCarApp.Entities
 {
-    public class CarsForRent : EntityBase
+    public class CarsForRent : Cars
     {
         public override string ToString() => $"Id {Id}. {carBrand + carModel}";
     }
