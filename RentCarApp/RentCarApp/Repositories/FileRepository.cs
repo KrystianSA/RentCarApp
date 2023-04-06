@@ -11,11 +11,9 @@ namespace RentCarApp.Repositories
     {
         public readonly List<T> _items = new();
         public readonly List<T> _updatedItems = new();
-        public readonly List<T> _sortItems = new();
         public event EventHandler<T>? ItemAdded;
         public event EventHandler<T>? ItemRemoved;
         private readonly string _fileNameJson = $"{typeof(T).Name}_save.json";
-        private int _id = 0;
 
         public FileRepository()
         {
@@ -38,6 +36,7 @@ namespace RentCarApp.Repositories
         public void Remove(T item)
         {
             _items.Remove(item);
+            ItemRemoved?.Invoke(this, item);
         }
         public void WriteToFileJson()
         {
@@ -52,6 +51,7 @@ namespace RentCarApp.Repositories
                 var deserializedObject = JsonSerializer.Deserialize<IEnumerable<T>>(objectsSerialized);
                 if (deserializedObject != null)
                 {
+                    _updatedItems.Clear();
                     foreach (var item in deserializedObject)
                     {
                         _updatedItems.Add(item);

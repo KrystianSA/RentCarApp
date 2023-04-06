@@ -14,8 +14,6 @@ var choiceForList = Console.ReadLine();
 
 var carsForRent = new FileRepository<CarsForRent>();
 carsForRent.DeleteFileTxt("Historia.txt");
-carsForRent.DeleteFileTxt("Samochody do wynajmu.txt");
-carsForRent.DeleteFileTxt("Zwrócone samochody.txt");
 
 carsForRent.ItemAdded += CarsForRentItemAdded;
 carsForRent.ItemRemoved += CarsForRentItemRemoved;
@@ -75,6 +73,7 @@ static void CarsForRent(IRepository<CarsForRent> carsForRent)
         }
         else if (choiceOfActivity == "4")
         {
+            carsForRent.DeleteFileTxt("Samochody do wynajmu.txt");
             carsForRent.SaveToFileTxt("Samochody do wynajmu.txt");
         }
         else
@@ -125,6 +124,7 @@ static void ReturnedCars(IRepository<ReturnedCars> returnedCars)
         }
         else if (choiceOfActivity == "4")
         {
+            returnedCars.DeleteFileTxt("Zwrócone samochody.txt");
             returnedCars.SaveToFileTxt("Zwrócone samochody.txt");
         }
         else if (choiceOfActivity == "q")
@@ -134,15 +134,17 @@ static void ReturnedCars(IRepository<ReturnedCars> returnedCars)
     }
 }
 
-
-switch (choiceForList)
+while (true)
 {
-    case "1":
-        CarsForRent(carsForRent);
-        break;
-    case "2":
-        ReturnedCars(returnedCars);
-        break;
-    default:
-        break;
+    switch (choiceForList) 
+    {
+        case "1":
+            CarsForRent(carsForRent);
+            break;
+        case "2":
+            ReturnedCars(returnedCars);
+            break;
+        default:
+            break;
+    }
 }
