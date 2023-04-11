@@ -10,7 +10,6 @@ namespace RentCarApp.Repositories
     public class FileRepository<T> : IRepository<T> where T : class, IEntity, new()
     {
         public readonly List<T> _items = new();
-        public readonly List<T> _updatedItems = new();
         public event EventHandler<T>? ItemAdded;
         public event EventHandler<T>? ItemRemoved;
         private readonly string _fileNameJson = $"{typeof(T).Name}_save.json";
@@ -23,27 +22,32 @@ namespace RentCarApp.Repositories
         {
             return _items.ToList();
         }
+
         public T GetById(int id)
         {
             return _items.Single(item => item.Id == id);
         }
+
         public void Add(T item)
         {
             item.Id = _items.Count + 1;
             _items.Add(item);
             ItemAdded?.Invoke(this, item);
         }
+
         public void Remove(T item)
         {
             _items.Remove(item);
             ItemRemoved?.Invoke(this, item);
         }
-        public void WriteToFileJson()
+
+        public void Save()
         {
             var objectSerialized = JsonSerializer.Serialize<IEnumerable<T>>(_items);
             File.WriteAllText(_fileNameJson, objectSerialized);
         }
-        public IEnumerable<T> ReadFromFileJsonAndAddToUpdatedList()
+
+        public IEnumerable<T> Read()
         {
             if (File.Exists(_fileNameJson))
             {
@@ -51,28 +55,31 @@ namespace RentCarApp.Repositories
                 var deserializedObject = JsonSerializer.Deserialize<IEnumerable<T>>(objectsSerialized);
                 if (deserializedObject != null)
                 {
-                    _updatedItems.Clear();
                     foreach (var item in deserializedObject)
                     {
-                        _updatedItems.Add(item);
+                        _items.Add(item);
                     }
                 }
             }
-            return _updatedItems;
+            return _items;
         }
-        public void SaveToFileTxt(string fileName)
+
+        public void SortElements()
         {
-            using (var writer = File.AppendText(fileName))
+            List<T> list = new List<T>();
+
+            for (int i = 0; i < _items.Count; i++)
             {
-                foreach (var item in _updatedItems)
-                {
-                    writer.WriteLine(item);
-                }
+                _items[i].Id = i + 1;
+                list.Add(_items[i]);
             }
-        }
-        public void DeleteFileTxt(string fileName)
-        {
-            File.Delete(fileName);
+
+            _items.Clear();
+
+            foreach (var item in list)
+            {
+                _items.Add(item);
+            }
         }
     }
 }

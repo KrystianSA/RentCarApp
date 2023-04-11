@@ -7,8 +7,7 @@ namespace RentCarApp.Repositories
     {
         void Add(T item);
         void Remove(T lineToRemove);
-        void WriteToFileJson();
-        void SaveToFileTxt(string fileName);
-        void DeleteFileTxt(string fileName);
+        void Save();
+        void SortElements();
     }
 }
