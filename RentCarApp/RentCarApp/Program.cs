@@ -1,8 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore.Diagnostics;
-using RentCarApp.Entities;
+﻿using RentCarApp.Entities;
 using RentCarApp.Repositories;
 using RentCarApp.Repositories.RepositoryExtensions;
-using System.Reflection.Metadata.Ecma335;
 
 void EventHandlerForCarOnItemAddedToFileTxt(object? sender, Car e)
 {

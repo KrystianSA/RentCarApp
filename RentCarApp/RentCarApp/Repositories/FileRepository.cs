@@ -1,8 +1,5 @@
 ﻿using RentCarApp.Entities;
 using RentCarApp.Repositories;
-using System.Collections.Immutable;
-using System.ComponentModel.DataAnnotations;
-using System.Runtime.CompilerServices;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace RentCarApp.Repositories
