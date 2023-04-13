@@ -8,7 +8,6 @@ namespace RentCarApp.Services
         private readonly IUserCommunication _userCommunication;
         private readonly IDataProvider _dataProvider;
         private readonly IEventHandlerService _eventHandlerService;
-        private readonly IDataSelector _dataSelector;
 
         public App(IUserCommunication userCommunication,
             IDataProvider dataProvider,
@@ -18,7 +17,6 @@ namespace RentCarApp.Services
             _userCommunication = userCommunication;
             _dataProvider = dataProvider;
             _eventHandlerService = eventHandlerService;
-            _dataSelector = dataSelector;
         }
 
         public void Run()
@@ -29,8 +27,6 @@ namespace RentCarApp.Services
             _eventHandlerService.EventHandlerForList();
             _dataProvider.AddCars();
             _userCommunication.ChooseWhatToDo();
-
-            // dodać do Usera możliwość filtrowania 
         }
     }
 }

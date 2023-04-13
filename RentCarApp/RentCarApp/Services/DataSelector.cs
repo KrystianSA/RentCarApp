@@ -19,7 +19,7 @@ namespace RentCarApp.Services
         public decimal GetMaximumPowerOfAllCars()
         {
             var cars = _carRepository.GetAll();
-            return cars.Select(x => x.Power).Min();
+            return cars.Select(x => x.Power).Max();
         }
 
         public decimal GetMinimumPowerOfAllCars()
@@ -31,7 +31,7 @@ namespace RentCarApp.Services
         public decimal GetMaximumPriceOfAllCars()
         {
             var cars = _carRepository.GetAll();
-            return cars.Select(x => x.PriceForDay).Min();
+            return cars.Select(x => x.PriceForDay).Max();
         }
 
         public decimal GetMinimumPriceOfAllCars()
