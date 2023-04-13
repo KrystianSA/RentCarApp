@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿/*using Microsoft.EntityFrameworkCore;
 using RentCarApp.Entities;
 using System.Collections.Generic;
 
@@ -35,3 +35,4 @@ namespace RentCarApp.Repositories
         }
     }
 }
+*/

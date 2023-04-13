@@ -7,9 +7,9 @@ namespace RentCarApp.Repositories
     public class FileRepository<T> : IRepository<T> where T : class, IEntity, new()
     {
         public readonly List<T> _items = new();
+        private readonly string _fileNameJson = $"{typeof(T).Name}_save.json";
         public event EventHandler<T>? ItemAdded;
         public event EventHandler<T>? ItemRemoved;
-        private readonly string _fileNameJson = $"{typeof(T).Name}_save.json";
 
         public FileRepository()
         {
