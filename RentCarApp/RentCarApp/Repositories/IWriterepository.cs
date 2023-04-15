@@ -9,6 +9,7 @@ namespace RentCarApp.Repositories
         void Remove(T lineToRemove);
         void Save();
         void SortElements();
+        void WriteToFileTxt();
     }
 
 }

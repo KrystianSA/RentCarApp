@@ -9,5 +9,4 @@ namespace RentCarApp.Repositories
         T GetById(int id);
         IEnumerable<T> Read();
     }
-
 }

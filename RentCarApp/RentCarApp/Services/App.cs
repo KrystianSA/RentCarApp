@@ -6,13 +6,13 @@ namespace RentCarApp.Services
     public class App : IApp
     {
         private readonly IUserCommunication _userCommunication;
-        private readonly IDataProvider _dataProvider;
+        private readonly ICarDataProvider _dataProvider;
         private readonly IEventHandlerService _eventHandlerService;
 
         public App(IUserCommunication userCommunication,
-            IDataProvider dataProvider,
+            ICarDataProvider dataProvider,
             IEventHandlerService eventHandlerService,
-            IDataSelector dataSelector)
+            ICarDataSelector dataSelector)
         {
             _userCommunication = userCommunication;
             _dataProvider = dataProvider;

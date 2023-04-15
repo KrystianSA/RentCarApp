@@ -1,4 +1,5 @@
-﻿using RentCarApp.Entities;
+﻿using Microsoft.VisualBasic;
+using RentCarApp.Entities;
 using RentCarApp.Repositories;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
@@ -8,6 +9,8 @@ namespace RentCarApp.Repositories
     {
         public readonly List<T> _items = new();
         private readonly string _fileNameJson = $"{typeof(T).Name}_save.json";
+        private readonly string _fileNameTxt = $"Lista Samochodów.txt";
+        public event EventHandler<T>? ItemsSaveToFile;
         public event EventHandler<T>? ItemAdded;
         public event EventHandler<T>? ItemRemoved;
 
@@ -59,6 +62,23 @@ namespace RentCarApp.Repositories
                 }
             }
             return _items;
+        }
+
+        public void WriteToFileTxt()
+        {
+            if(File.Exists(_fileNameTxt))
+            {
+                File.WriteAllText(_fileNameTxt, string.Empty);
+            }
+
+            using (var writer = new StreamWriter(_fileNameTxt))
+            {
+                foreach (var item in _items)
+                {
+                    writer.WriteLine(item);
+                }
+            }
+            ItemsSaveToFile?.Invoke(this, new T());
         }
 
         public void SortElements()

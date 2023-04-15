@@ -7,4 +7,3 @@ namespace RentCarApp.Entities
         public int Id { get; set; }
     }
 }
-

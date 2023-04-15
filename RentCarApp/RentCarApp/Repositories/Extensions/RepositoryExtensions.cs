@@ -11,7 +11,6 @@ namespace RentCarApp.Repositories.RepositoryExtensions
             {
                 repository.Add(item);
             }
-
             repository.Save();
         }
     }

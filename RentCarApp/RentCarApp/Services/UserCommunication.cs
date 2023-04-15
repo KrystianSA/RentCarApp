@@ -6,9 +6,9 @@ namespace RentCarApp.Services
     public class UserCommunication : IUserCommunication
     {
         private readonly IRepository<Car> _carRepository;
-        private readonly IDataSelector _dataSelector;
+        private readonly ICarDataSelector _dataSelector;
 
-        public UserCommunication(IRepository<Car> carRepository, IDataSelector dataSelector)
+        public UserCommunication(IRepository<Car> carRepository, ICarDataSelector dataSelector)
         {
             _carRepository = carRepository;
             _dataSelector = dataSelector;
@@ -109,26 +109,10 @@ namespace RentCarApp.Services
 
             void WriteToFileTxt(IRepository<Car> carRepository)
             {
-                DeleteFileTxt();
-                var cars = carRepository.GetAll();
-                using (var writer = new StreamWriter("Lista Samochodów.txt"))
-                {
-                    foreach (var car in cars)
-                    {
-                        writer.WriteLine(car);
-                    }
-                }
+                carRepository.WriteToFileTxt();
             }
 
-            void DeleteFileTxt()
-            {
-                if (File.Exists("Lista Samochodów.txt"))
-                {
-                    File.Delete("Lista Samochodów.txt");
-                }
-            }
-
-            void SearchSpecificElementInBase(IRepository<Car> carRepository, IDataSelector dataSelector)
+            void SearchSpecificElementInBase(IRepository<Car> carRepository, ICarDataSelector dataSelector)
             {
                 Console.WriteLine(" 1. Maksymalna Moc");
                 Console.WriteLine(" 2. Minimalna  Moc");

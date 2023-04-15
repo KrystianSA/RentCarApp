@@ -7,5 +7,6 @@ namespace RentCarApp.Repositories
     {
         public event EventHandler<T>? ItemAdded;
         public event EventHandler<T>? ItemRemoved;
+        public event EventHandler<T>? ItemsSaveToFile;
     }
 }
