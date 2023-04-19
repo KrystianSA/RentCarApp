@@ -1,5 +1,7 @@
 ﻿using RentCarApp.Repositories;
 using RentCarApp.Entities;
+using RentCarApp.Components.CvsReader;
+using System.Xml.Linq;
 
 namespace RentCarApp.Services
 {
@@ -8,15 +10,18 @@ namespace RentCarApp.Services
         private readonly IUserCommunication _userCommunication;
         private readonly ICarDataProvider _dataProvider;
         private readonly IEventHandlerService _eventHandlerService;
+        private readonly ICsvReader _csvReader;
 
         public App(IUserCommunication userCommunication,
             ICarDataProvider dataProvider,
             IEventHandlerService eventHandlerService,
-            ICarDataSelector dataSelector)
+            ICarDataSelector dataSelector,
+            ICsvReader csvReader)
         {
             _userCommunication = userCommunication;
             _dataProvider = dataProvider;
             _eventHandlerService = eventHandlerService;
+            _csvReader = csvReader;
         }
 
         public void Run()
@@ -26,7 +31,7 @@ namespace RentCarApp.Services
 
             _eventHandlerService.EventHandlerForList();
             _dataProvider.AddCars();
-            _userCommunication.ChooseWhatToDo();
+            _userCommunication.ChooseWhatToDo();      
         }
     }
 }

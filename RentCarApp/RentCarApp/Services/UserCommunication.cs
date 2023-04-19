@@ -1,5 +1,8 @@
 ﻿using RentCarApp.Repositories;
 using RentCarApp.Entities;
+using RentCarApp.Components.CvsReader;
+using RentCarApp.Components.XmlCreator;
+using System.Xml.Linq;
 
 namespace RentCarApp.Services
 {
@@ -8,7 +11,10 @@ namespace RentCarApp.Services
         private readonly IRepository<Car> _carRepository;
         private readonly ICarDataSelector _dataSelector;
 
-        public UserCommunication(IRepository<Car> carRepository, ICarDataSelector dataSelector)
+        public UserCommunication(
+            IRepository<Car> carRepository,
+            ICarDataSelector dataSelector,
+            IXmlCreator xmlCreator)
         {
             _carRepository = carRepository;
             _dataSelector = dataSelector;
@@ -20,11 +26,12 @@ namespace RentCarApp.Services
             while (true)
             {
                 Console.WriteLine("\n1. Lista samochodów");
-                Console.WriteLine("2. Przeszukaj bazę");
+                Console.WriteLine("2. Przeszukaj listę");
                 Console.WriteLine("3. Dodaj samochód do listy");
                 Console.WriteLine("4. Usuń samochód z listy");
                 Console.WriteLine("5. Zapisz dane do pliku");
-                Console.WriteLine("6. Wyjście\n");
+                Console.WriteLine("6. Katalog samochodów");
+                Console.WriteLine("7. Wyjście\n");
                 Console.Write("Wybór : ");
                 var choice = Console.ReadLine();
                 Console.WriteLine(" ");
@@ -34,7 +41,7 @@ namespace RentCarApp.Services
                         WriteAllToConsole(_carRepository);
                         break;
                     case "2":
-                        SearchSpecificElementInBase(_carRepository,_dataSelector);
+                        SearchSpecificElementInBase(_carRepository, _dataSelector);
                         break;
                     case "3":
                         AddNewCar(_carRepository);
@@ -46,10 +53,31 @@ namespace RentCarApp.Services
                         WriteToFileTxt(_carRepository);
                         break;
                     case "6":
+                        ReadXmlFile();
+                        break;
+                    case "7":
                         return;
                     default:
                         Console.WriteLine("Nie ma takiej opcji");
                         break;
+                }
+            }
+
+            static void ReadXmlFile()
+            {
+                var document = XDocument.Load("Katalog Samochodów.xml");
+
+                var cars = document
+                    .Descendants("Car")
+                    .Select(x => new
+                    {
+                        Model = x.Attribute("Model")?.Value,
+                        Manufacturer = x.Ancestors("Manufacturer").Select(x => x.Attribute("Name")?.Value).FirstOrDefault()
+                    });
+
+                foreach (var car in cars)
+                {
+                    Console.WriteLine($"Marka: {car.Manufacturer}, Model: {car.Model}");
                 }
             }
 
@@ -74,9 +102,14 @@ namespace RentCarApp.Services
                 var priceForDay = Console.ReadLine();
                 Console.Write("Podaj moc samochodu [KM] : ");
                 var power = Console.ReadLine();
-                var car = new Car { Brand = brand, Model = model, Color = color,
+                var car = new Car
+                {
+                    Brand = brand,
+                    Model = model,
+                    Color = color,
                     PriceForDay = decimal.Parse(priceForDay),
-                    Power = decimal.Parse(power) };
+                    Power = decimal.Parse(power)
+                };
 
                 Console.WriteLine("Czy samochód jest wypożyczony / zwrócony / wolny? (t/n/w)");
                 var isRented = Console.ReadLine();
@@ -126,7 +159,7 @@ namespace RentCarApp.Services
                 Console.Write("Wybór : ");
                 var choice = Console.ReadLine();
 
-                switch (choice) 
+                switch (choice)
                 {
                     case "1":
                         Console.WriteLine($"\n{dataSelector.GetMaximumPowerOfAllCars()} KM");
