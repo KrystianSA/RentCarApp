@@ -1,19 +1,20 @@
 ﻿
 using Microsoft.EntityFrameworkCore;
 using RentCarApp.Entities;
+using RentCarApp.Components.Models;
 
 namespace RentCarApp.Data
 {
     public class RentCarAppDbContext : DbContext
     {
-        public DbSet<CarsForRent> carsForRent => Set<CarsForRent>();
-        public DbSet<ReturnedCars> ReturnedCars => Set<ReturnedCars>();
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        public RentCarAppDbContext(DbContextOptions<RentCarAppDbContext> options)
+            : base(options)
         {
-            base.OnConfiguring(optionsBuilder);
-            optionsBuilder.UseInMemoryDatabase("StorageAppDb");
+            
         }
+
+        public DbSet<Entities.Car> Cars { get; set; }
+        public DbSet<CarsCatalog> CarsCatalog { get; set; }
     }
 }
 

@@ -1,5 +1,4 @@
-﻿
-namespace RentCarApp.Components.CvsReader.Models
+﻿namespace RentCarApp.Components.Models
 {
     public class Manufacturer
     {

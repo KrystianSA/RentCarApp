@@ -16,12 +16,6 @@ namespace RentCarApp.Services
         {
             _carRepository.ItemAdded += EventHandlerForCarOnItemAddedToFileTxt;
             _carRepository.ItemRemoved += EventHandlerForCarOnItemRemovedToFileTxt;
-            _carRepository.ItemsSaveToFile += EventHandlerForCarOnItemsSaveToFileTxt;
-        }
-
-        private void EventHandlerForCarOnItemsSaveToFileTxt(object? sender, Car e)
-        {
-            Console.WriteLine("===> Zapisano do pliku <===");
         }
 
         private void EventHandlerForCarOnItemAddedToFileTxt(object? sender, Car e)

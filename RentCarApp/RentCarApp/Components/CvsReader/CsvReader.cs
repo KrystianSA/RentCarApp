@@ -1,6 +1,6 @@
 ﻿using RentCarApp.Components.CvsReader;
 using RentCarApp.Components.CvsReader.Extensions;
-using RentCarApp.Components.CvsReader.Models;
+using RentCarApp.Components.Models;
 using RentCarApp.Repositories;
 
 namespace RentCarApp.Components.CvsReader

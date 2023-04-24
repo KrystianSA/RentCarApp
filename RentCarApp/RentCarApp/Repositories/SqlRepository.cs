@@ -1,6 +1,7 @@
-﻿/*using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using RentCarApp.Entities;
 using System.Collections.Generic;
+using RentCarApp.Data;
 
 namespace RentCarApp.Repositories
 {
@@ -8,6 +9,11 @@ namespace RentCarApp.Repositories
     {
         public readonly DbSet<T> dbSet;
         private readonly DbContext dbContext;
+
+        public event EventHandler<T>? ItemAdded;
+        public event EventHandler<T>? ItemRemoved;
+        public event EventHandler<T>? ItemsSaveToFile;
+
         public SqlRepository(DbContext DbContext)
         {
             dbContext = DbContext;
@@ -23,7 +29,7 @@ namespace RentCarApp.Repositories
         }
         public void Add(T item)
         {
-            ; dbSet.Add(item);
+            dbSet.Add(item);
         }
         public void Remove(T item)
         {
@@ -33,6 +39,20 @@ namespace RentCarApp.Repositories
         {
             dbContext.SaveChanges();
         }
+
+        public void SortElements()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void WriteToFileTxt()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<T> Read()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
-*/

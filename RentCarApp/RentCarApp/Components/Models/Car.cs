@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RentCarApp.Components.CvsReader.Models
+namespace RentCarApp.Components.Models
 {
     public class Car
     {

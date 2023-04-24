@@ -3,6 +3,8 @@ using RentCarApp.Entities;
 using RentCarApp.Components.CvsReader;
 using RentCarApp.Components.XmlCreator;
 using System.Xml.Linq;
+using RentCarApp.Data;
+using System.Xml.XPath;
 
 namespace RentCarApp.Services
 {
@@ -10,27 +12,28 @@ namespace RentCarApp.Services
     {
         private readonly IRepository<Car> _carRepository;
         private readonly ICarDataSelector _dataSelector;
+        private readonly RentCarAppDbContext _rentCarAppDbContext;
 
         public UserCommunication(
             IRepository<Car> carRepository,
             ICarDataSelector dataSelector,
-            IXmlCreator xmlCreator)
+            RentCarAppDbContext rentCarAppDbContext)
         {
             _carRepository = carRepository;
             _dataSelector = dataSelector;
+            _rentCarAppDbContext = rentCarAppDbContext;
         }
-
         public void ChooseWhatToDo()
         {
 
             while (true)
             {
-                Console.WriteLine("\n1. Lista samochodów");
+                Console.WriteLine("\n1. Lista dostępnych samochodów");
                 Console.WriteLine("2. Przeszukaj listę");
                 Console.WriteLine("3. Dodaj samochód do listy");
                 Console.WriteLine("4. Usuń samochód z listy");
-                Console.WriteLine("5. Zapisz dane do pliku");
-                Console.WriteLine("6. Katalog samochodów");
+                Console.WriteLine("5. Edytuj dane samochodu");
+                Console.WriteLine("6. Katalog pojazdów na zamówienie");
                 Console.WriteLine("7. Wyjście\n");
                 Console.Write("Wybór : ");
                 var choice = Console.ReadLine();
@@ -47,13 +50,27 @@ namespace RentCarApp.Services
                         AddNewCar(_carRepository);
                         break;
                     case "4":
-                        RemoveCarAndSortList(_carRepository);
+                        RemoveCar(_carRepository);
                         break;
                     case "5":
-                        WriteToFileTxt(_carRepository);
+                        EditCar(_carRepository);
                         break;
                     case "6":
-                        ReadXmlFile();
+                        Console.Write("Wybierz catalog z bazy SQL lub pliku XML : ");
+                        var catalog = Console.ReadLine();
+                        if (catalog.ToLower() == "sql")
+                        {
+                            CarCatalogFromSql(_rentCarAppDbContext);
+                        }
+                        else if (catalog.ToLower() == "xml")
+                        {
+                            CarCatalogFromXml();
+                        }
+                        else
+                        {
+                            Console.WriteLine("Nie ma takiej opcji");
+                        }
+                        CarCatalogFromXml();
                         break;
                     case "7":
                         return;
@@ -63,30 +80,14 @@ namespace RentCarApp.Services
                 }
             }
 
-            static void ReadXmlFile()
-            {
-                var document = XDocument.Load("Katalog Samochodów.xml");
-
-                var cars = document
-                    .Descendants("Car")
-                    .Select(x => new
-                    {
-                        Model = x.Attribute("Model")?.Value,
-                        Manufacturer = x.Ancestors("Manufacturer").Select(x => x.Attribute("Name")?.Value).FirstOrDefault()
-                    });
-
-                foreach (var car in cars)
-                {
-                    Console.WriteLine($"Marka: {car.Manufacturer}, Model: {car.Model}");
-                }
-            }
-
             static void WriteAllToConsole<T>(IRepository<T> carRepository) where T : class, IEntity
             {
-                var cars = carRepository.GetAll();
+                var cars = carRepository.Read();
+
                 foreach (var car in cars)
                 {
-                    Console.WriteLine($"\n{car}");
+                    Console.WriteLine(car);
+                    Console.WriteLine();
                 }
             }
 
@@ -111,7 +112,7 @@ namespace RentCarApp.Services
                     Power = decimal.Parse(power)
                 };
 
-                Console.WriteLine("Czy samochód jest wypożyczony / zwrócony / wolny? (t/n/w)");
+                Console.Write("Czy samochód jest wypożyczony / zwrócony / do wypożyczenia? (t/n/w) : ");
                 var isRented = Console.ReadLine();
                 switch (isRented)
                 {
@@ -130,19 +131,15 @@ namespace RentCarApp.Services
                 newCar.Save();
             }
 
-            static void RemoveCarAndSortList(IRepository<Car> removeCar)
+
+            static void RemoveCar(IRepository<Car> removeCar)
             {
+                removeCar.Read();
                 Console.Write("Podaj numer id samochodu do usunięcia: ");
                 var id = int.Parse(Console.ReadLine());
                 var car = removeCar.GetById(id);
                 removeCar.Remove(car);
-                removeCar.SortElements();
                 removeCar.Save();
-            }
-
-            void WriteToFileTxt(IRepository<Car> carRepository)
-            {
-                carRepository.WriteToFileTxt();
             }
 
             void SearchSpecificElementInBase(IRepository<Car> carRepository, ICarDataSelector dataSelector)
@@ -209,6 +206,92 @@ namespace RentCarApp.Services
                         break;
                     default:
                         break;
+                }
+            }
+
+            static void EditCar(IRepository<Car> carRepository)
+            {
+                var cars = carRepository.GetAll();
+
+                Console.WriteLine("Elementy które mogą zostać edytowane to cena za dzień wynajmu");
+                Console.Write("Podaj numer id samochodu do edycji: ");
+                var id = int.Parse(Console.ReadLine());
+                var car = carRepository.GetById(id);
+
+                Console.Write("Podaj nową cenę wynajęcia za dzień [zł] : ");
+                var price = int.Parse(Console.ReadLine());
+
+                car.PriceForDay = price;
+                carRepository.Save();
+
+            }
+
+            static void CarCatalogFromSql(RentCarAppDbContext rentCarAppDbContext)
+            {
+                var cars = rentCarAppDbContext.CarsCatalog
+                    .Select(x => x.Brand)
+                    .Distinct()
+                    .ToList();
+
+                foreach (var car in cars)
+                {
+                    Console.WriteLine(car);
+                }
+
+                Console.Write("\nWybierz markę samochodu : ");
+                Console.WriteLine();
+                var brand = Console.ReadLine();
+
+                if (brand != null)
+                {
+                    var carGroups = rentCarAppDbContext.CarsCatalog
+                        .Where(x => x.Brand == brand.ToLower())
+                        .GroupBy(x => x.Model)
+                        .ToList();
+
+                    foreach (var carGroup in carGroups)
+                    {
+                        Console.WriteLine($"\t{carGroup.Key}");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Nieprawidłowa wartość");
+                }
+            }
+
+            static void CarCatalogFromXml()
+            {
+                var document = XDocument.Load("Katalog Samochodów.xml");
+
+                var cars = document
+                    .Elements("Manufacturers")?
+                    .Elements("Manufacturer")
+                    .Select(x => x.Attribute("Name")?.Value);
+
+                foreach (var car in cars)
+                {
+                    Console.WriteLine(car);
+                }
+
+                Console.Write("\nWybierz dostępną markę samochodu : \n");
+                var brand = Console.ReadLine();
+                if (brand != null)
+                {
+                    var models = document
+                    .Elements("Manufacturers")?
+                    .Elements("Manufacturer")
+                    .Where(x => x.Attribute("Name")?.Value == brand)
+                    .Elements("Cars")?
+                    .Elements("Car")?
+                    .Elements("Car")
+                    .Select(x => x.Attribute("Model")?.Value)
+                    .Distinct();
+
+                    foreach (var model in models)
+                    {
+                        Console.WriteLine($"\nModel : {model}");
+                    }
                 }
             }
         }
